@@ -4,7 +4,7 @@ import MySQLdb
 import fileinput
 import os
 
-print("Configuration de wp-config.php")
+print("Config of wp-config.php")
 
 userSQL = raw_input("User DB : ")
 pwdSQL = raw_input("Pwd DB : ")
@@ -15,9 +15,9 @@ if hostSQL == 'y':
 elif hostSQL == 'n' : 
 	hostSQL = raw_input("Host DB :")
 
-print("Le nouveau host est : "+hostSQL)
+print("New host is : "+hostSQL)
 
-print("Modification du wp-config-db.php")
+print("Editing of wp-config-db.php")
 
 with open('wp-config.php') as fin, open('wp-config2.php', 'w') as fout:
     for i, name in enumerate(fin, 1):
@@ -45,14 +45,14 @@ with open('wp-config4.php') as fin, open('wp-config5.php', 'w') as fout:
             os.rename("wp-config5.php","wp-config.php")
         fout.write(name)
 
-print("Configuration des URLs en db")
+print("Cfg URLS in DB")
 
-oldUrl = raw_input("Ancienne URL ? ")
-newUrl = raw_input("Nouvelle URL ? ")
-validate = raw_input("De l'url : "+oldUrl+" => vers cette nouvelle url : "+newUrl+" , ok ? (y/n)")
+oldUrl = raw_input("Old URL ? ")
+newUrl = raw_input("New URL ? ")
+validate = raw_input("From URL : "+oldUrl+" => To new URL : "+newUrl+" , ok ? (y/n)")
 if validate == 'y' :
-	print("Vous avez valide la configuration")
-	print("Changement URL principale")
+	print("Check yes for config")
+	print("Currently replace url main")
 	db = MySQLdb.connect(host=hostSQL,
                      user=userSQL,
                      passwd=pwdSQL,
@@ -60,22 +60,22 @@ if validate == 'y' :
 	cur = db.cursor()
 	reqUrl = ("UPDATE wp_options SET option_value = REPLACE(option_value, '"+oldUrl+"', '"+newUrl+"') WHERE option_name = 'home' OR option_name = 'siteurl';")
 	if cur.execute(reqUrl):
-		print("Url principale OK, changement des GUID en cours")
+		print("Url main OK, replace GUID ...")
 		reqGuid = ("UPDATE wp_posts SET guid = REPLACE(guid, '"+oldUrl+"', '"+newUrl+"');")
 		if cur.execute(reqGuid):
-			print("Guid OK, changement des urls des contenus (Images, Liens, Documents)")
+			print("Guid OK, repalce urls of medias (Images, Links, Docs)")
 			reqContent = ("UPDATE wp_posts SET post_content = REPLACE(post_content, '"+oldUrl+"', '"+newUrl+"');")
 			if cur.execute(reqContent):
 				reqMetaPost = ("UPDATE wp_postmeta SET meta_value = REPLACE(meta_value, '"+oldUrl+"','"+newUrl+"');")
 				if cur.execute(reqMetaPost):
-					print("Votre DB a ete mise a jour")
+					print("DB is OK")
 				else:
-					print("Erreur DB")
+					print("Error DB")
 			else:
-				print("Erreur CONTENT")
+				print("Error CONTENT")
 		else:
-			print("Erreur GUID")
+			print("Error GUID")
 	else:
-		print("Erreur URL")
+		print("Error URL")
 else :
-	print("Reload la charge")
+	print("Reload")
